@@ -50,6 +50,8 @@ class ScriptController extends Controller
             'doc' => time() . '-' . $docName,
         ]);
 
+        activity()->event('success')->log('Menambahkan data naskah');
+
         toast('Naskah telah ditambahkan', 'success');
 
         return redirect()->route('scripts.index');
