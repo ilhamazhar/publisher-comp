@@ -30,9 +30,7 @@ class ScriptPolicy
      */
     public function view(User $user, Script $script)
     {
-        return $user->role_id === 1
-            ? true
-            : $user->id === $script->user_id;
+        return $user->role_id === 1 || $user->id === $script->user_id;
     }
 
     /**
@@ -55,7 +53,9 @@ class ScriptPolicy
      */
     public function update(User $user, Script $script)
     {
-        return $user->role_id === 1;
+        return $user->role_id === 1
+            ? true
+            : $user->id === $script->user_id;
     }
 
     /**
@@ -92,5 +92,10 @@ class ScriptPolicy
     public function forceDelete(User $user, Script $script)
     {
         //
+    }
+
+    public function status(User $user, Script $script)
+    {
+        return  $user->id === $script->user_id;
     }
 }

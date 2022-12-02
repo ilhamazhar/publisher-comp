@@ -15,6 +15,7 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="shortcut icon" href="{{ asset('logo.png') }}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
 
@@ -23,6 +24,7 @@
 </head>
 
 <body>
+    @include('sweetalert::alert')
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -86,6 +88,8 @@
         <main class="py-4">
             @yield('content')
         </main>
+
+        @yield('js')
     </div>
 </body>
 

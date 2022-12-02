@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header">Detail Naskah : {{ $script->user->name }} Dkk</div>
+                    <div class="card-header">Detail Naskah : {{ $script->authors }} Dkk</div>
                     <div class="card-body">
                         <table class="table">
                             <tr>
@@ -27,6 +27,17 @@
                                 <th>Judul</th>
                                 <td>:</td>
                                 <td>{{ $script->head }}</td>
+                            </tr>
+                            <tr>
+                                <th>Terdaftar Pada</th>
+                                <td>:</td>
+                                <td>{{ $script->created_at->format('d-m-Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dokumen</th>
+                                <td>:</td>
+                                <td><a href="{{ asset('storage/docs/' . $script->doc) }}"
+                                        target="_blank">{{ $script->doc }}</a></td>
                             </tr>
                             <tr>
                                 <th>Status</th>

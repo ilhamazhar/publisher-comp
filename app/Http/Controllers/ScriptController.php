@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Script;
 use App\Models\Status;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,9 +12,12 @@ class ScriptController extends Controller
 {
     public function index()
     {
-        $scripts = Script::all();
+        $content = [
+            'scripts' => Script::paginate(10),
+            'statuses' => Status::all(),
+        ];
 
-        return view('scripts.index', compact('scripts'));
+        return view('scripts.index', $content);
     }
 
     public function create()
@@ -31,7 +35,7 @@ class ScriptController extends Controller
             'email' => ['required', 'email', 'unique:scripts,email'],
             'phone' => ['required', 'numeric', 'unique:scripts,phone'],
             'head' => ['required'],
-            'doc' => ['required']
+            'doc' => ['required', 'mimes:pdf']
         ])->validate();
 
         $docName = $request->doc->getClientOriginalName();
@@ -45,6 +49,8 @@ class ScriptController extends Controller
             'head' => $request->head,
             'doc' => time() . '-' . $docName,
         ]);
+
+        toast('Naskah telah ditambahkan', 'success');
 
         return redirect()->route('scripts.index');
     }
@@ -65,27 +71,34 @@ class ScriptController extends Controller
     {
         $scripts = ($request->all());
         // dd($scripts);
-        Validator::make($scripts, [
-            'authors' => ['required'],
-            'email' => ['required', 'email', 'unique:scripts,email,' . $script->id],
-            'phone' => ['required', 'numeric', 'unique:scripts,phone,' . $script->id],
-            'head' => ['required'],
-            // 'doc' => ['required']
-        ])->validate();
+        if ($request->user()->role_id == 1) {
+            $script->update(['status_id' => $request->status_id]);
+        } else {
+            Validator::make($scripts, [
+                'authors' => ['required'],
+                'email' => ['required', 'email', 'unique:scripts,email,' . $script->id],
+                'phone' => ['required', 'numeric', 'unique:scripts,phone,' . $script->id],
+                'head' => ['required'],
+                // 'doc' => ['required', 'mimes:pdf']
+            ])->validate();
 
-        $script->update([
-            'authors' => $request->authors,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'head' => $request->head,
-            'status_id' => $request->status_id
-        ]);
+            $script->update([
+                'authors' => $request->authors,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'head' => $request->head,
+            ]);
+        }
+
+        toast('Naskah telah diubah', 'success');
 
         return redirect()->route('scripts.index');
     }
 
     public function show(Script $script)
     {
+        $this->authorize('view', $script);
+
         return view('scripts.show', compact('script'));
     }
 
@@ -95,6 +108,17 @@ class ScriptController extends Controller
 
         $script->delete();
 
+        toast('Data telah dihapus', 'error');
+
         return redirect()->route('scripts.index');
+    }
+
+    public function birtday()
+    {
+        $this->authorize('viewAny', Script::class);
+
+        $birtday = Script::whereNotBetween('created_at', [Carbon::now()->subYear(), Carbon::now()])->get();
+
+        return view('scripts.birtday', compact('birtday'));
     }
 }

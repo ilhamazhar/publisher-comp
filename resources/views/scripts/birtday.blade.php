@@ -5,18 +5,9 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
-                    <div class="card-header">Data Semua Naskah :</div>
+                    <div class="card-header">Data Naskah Yang Berulang Tahun :</div>
 
                     <div class="card-body">
-                        @cannot('viewAny', \App\Models\Script::class)
-                            <a href="{{ route('scripts.create') }}" class="btn btn-primary mb-3">
-                                <i class="fa-regular fa-square-plus me-1"></i> Tambah Naskah
-                            </a>
-                        @elsecannot('viewAny')
-                            <a href="{{ route('scripts.birtday') }}" class="btn btn-danger mb-3">
-                                <i class="fa-solid fa-cake-candles me-1"></i> Naskah Ulang tahun
-                            </a>
-                        @endcannot
                         <table class="table">
                             <thead>
                                 @can('viewAny', \App\Models\Script::class)
@@ -30,11 +21,12 @@
                                 <th>Aksi</th>
                             </thead>
                             <tbody>
-                                @foreach ($scripts as $script)
+
+                                @foreach ($birtday as $script)
                                     @can('view', $script)
                                         <tr>
                                             @can('viewAny', \App\Models\Script::class)
-                                                <td><b>{{ $scripts->firstItem() + $loop->index }}</b></td>
+                                                <td><b>{{ $loop->iteration }}</b></td>
                                             @endcan
                                             <td><i>{{ $script->authors }}</i></td>
                                             <td><i>{{ $script->email }}</i></td>
@@ -65,11 +57,11 @@
                                                     title="Detail">
                                                     <i class="fa-solid fa-bars"></i>
                                                 </a>
-                                                <a href="{{ route('scripts.edit', $script) }}"
-                                                    class="btn btn-success btn-sm mx-2" title="Edit">
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </a>
-                                                @can('delete', $script)
+                                                @can('update', $script)
+                                                    <a href="{{ route('scripts.edit', $script) }}"
+                                                        class="btn btn-success btn-sm mx-2" title="Edit">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </a>
                                                     <form action="{{ route('scripts.destroy', $script) }}" method="post"
                                                         onsubmit="return confirm('Yakin dihapus ?')">
                                                         @csrf
@@ -82,40 +74,20 @@
                                             </td>
                                         </tr>
                                     @endcan
-                                    {{-- <x-modal> --}}
                                 @endforeach
                             </tbody>
                         </table>
-                        @can('viewAny', \App\Models\Script::class)
-                            {{ $scripts->links('pagination::bootstrap-4') }}
-                        @endcan
 
                         @empty($script)
                             <div class="row text-muted text-center">
                                 <h5 class="">Data tidak ditemukan !</h5>
                             </div>
                         @endempty
+
+                        <a href="{{ route('scripts.index') }}" class="btn btn-dark">Kembali</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-
-@section('js')
-    <script>
-        $(document).on('click', '.open_modal', function() {
-            var url = "domain.com/yoururl";
-            var tour_id = $(this).val();
-            $.get(url + '/' + tour_id, function(data) {
-                //success data
-                console.log(data);
-                $('#tour_id').val(data.id);
-                $('#name').val(data.name);
-                $('#details').val(data.details);
-                $('#btn-save').val("update");
-                $('#myModal').modal('show');
-            })
-        });
-    </script>
 @endsection

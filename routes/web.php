@@ -26,5 +26,5 @@ Route::get('/', function () {
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::resource('scripts', ScriptController::class);
-    Route::resource('admin', AdminController::class);
+    Route::get('birtday', [ScriptController::class, 'birtday'])->name('scripts.birtday');
 });
